@@ -1,9 +1,10 @@
 book.delete()
 # CRUD Operations in Django Shell
-# Delete the book
-single_book.delete()
-# Verify it's gone (should return an empty QuerySet)
-print(Book.objects.all())
+```python
+from bookshelf.models import Book
+book = Book.objects.get(title="Nineteen Eighty-Four")
+book.delete()
+Book.objects.all()
 
 ## Delete
 >>> b.delete()
