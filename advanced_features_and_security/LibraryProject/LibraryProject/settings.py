@@ -124,17 +124,6 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-# Browser-side protections against XSS and Clickjacking
-SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Cookie security (Requires HTTPS)
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
 
 # Content Security Policy (using django-csp middleware)
 # Note: You must run 'pip install django-csp' first
@@ -152,11 +141,16 @@ MIDDLEWARE = [
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "https://fonts.googleapis.com")
 
-# Security settings for production
-DEBUG = False  # Ensure this is False for the checker
+# ==============================
+# Security settings (ALX checks)
+# ==============================
 
 SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
+
+X_FRAME_OPTIONS = "DENY"
+
 SECURE_CONTENT_TYPE_NOSNIFF = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = False
+
+SESSION_COOKIE_SECURE = False
