@@ -1,13 +1,19 @@
-book.delete()
-# CRUD Operations in Django Shell
-```python
-from bookshelf.models import Book
-book = Book.objects.get(title="Nineteen Eighty-Four")
-book.delete()
-Book.objects.all()
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Books</h1>
 
-## Delete
->>> b.delete()
-(1, {'book_store.Book': 1})
->>> Book.objects.all()
-<QuerySet []>
+    {% if books %}
+        <ul>
+        {% for book in books %}
+            <li>{{ book.title }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No books available.</p>
+    {% endif %}
+</body>
+</html>
