@@ -71,3 +71,10 @@ def example_form_view(request):
         form = ExampleForm()
         
     return render(request, 'bookshelf/form_example.html', {'form': form})
+
+from django.shortcuts import render
+from .forms import ExampleForm
+
+def example_form_view(request):
+    form = ExampleForm()
+    return render(request, 'bookshelf/form_example.html', {'form': form})
