@@ -31,3 +31,43 @@ def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     book.delete()
     return redirect('book_list')
+
+from django.shortcuts import render
+from .models import Book
+from .forms import ExampleForm
+
+def search_books(request):
+    query = request.GET.get('q', '')
+    
+    # SECURE: Using Django's ORM automatically parameterizes the query
+    # This prevents SQL Injection attacks.
+    books = Book.objects.filter(title__icontains=query)
+    
+    return render(request, 'bookshelf/book_list.html', {'books': books})
+
+def example_form_view(request):
+    # SECURE: Using Django Forms for validation and sanitization
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Process sanitized data
+            pass
+    else:
+        form = ExampleForm()
+    return render(request, 'bookshelf/form_example.html', {'form': form})
+
+from django.shortcuts import render
+from .forms import ExampleForm
+
+def example_form_view(request):
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Data is now "cleaned" and safe from script injection
+            cleaned_data = form.cleaned_data
+            # Process data...
+            return render(request, 'bookshelf/form_example.html', {'form': form, 'success': True})
+    else:
+        form = ExampleForm()
+        
+    return render(request, 'bookshelf/form_example.html', {'form': form})
