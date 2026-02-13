@@ -73,13 +73,18 @@ WSGI_APPLICATION = 'django_blog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
+DATABASES = { 
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'my_blog_db',
+        'USER': 'my_blog_user',
+        'PASSWORD': 'my_password',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
+
+
 
 
 # Password validation
