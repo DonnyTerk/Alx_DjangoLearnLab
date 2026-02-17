@@ -11,6 +11,3 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='blog/logout.html'), name='logout'),
 ]
 
-urlpatterns = [
-    path('', views.index, name='index'),
-]
