@@ -1,17 +1,11 @@
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post
-from django.shortcuts import render
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
-from .models import Post, Comment
-from .forms import CommentForm
-from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm
+from .models import Post, Comment
+from .forms import CommentForm, RegisterForm
 
 
 def index(request):
@@ -35,8 +29,10 @@ def profile(request):
         request.user.email = request.POST.get('email')
         request.user.save()
         return redirect('profile')
-
     return render(request, 'blog/profile.html')
+
+
+# ──────────────── POST VIEWS ────────────────
 
 class PostListView(ListView):
     model = Post
@@ -47,6 +43,7 @@ class PostListView(ListView):
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['title', 'content']
@@ -78,57 +75,48 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         return self.request.user == post.author
 
-# --- ADD A COMMENT ---
-@login_required                         # only logged-in users can comment
-def add_comment(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
 
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)  # don't save to DB yet
-            comment.post = post                # attach the post
-            comment.author = request.user      # attach the logged-in user
-            comment.save()                     # NOW save to DB
-            return redirect('post-detail', pk=post.id)  # go back to the post
-    else:
-        form = CommentForm()
+# ──────────────── COMMENT VIEWS ────────────────
 
-    return render(request, 'blog/add_comment.html', {'form': form, 'post': post})
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/add_comment.html'
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        return super().form_valid(form)
 
-# --- EDIT A COMMENT ---
-@login_required
-def edit_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['post_id']})
 
-    # Only the comment's author can edit it
-    if comment.author != request.user:
-        return HttpResponseForbidden("You can't edit someone else's comment.")
-
-    if request.method == 'POST':
-        form = CommentForm(request.POST, instance=comment)  # pre-fill with existing data
-        if form.is_valid():
-            form.save()
-            return redirect('post-detail', pk=comment.post.id)
-    else:
-        form = CommentForm(instance=comment)
-
-    return render(request, 'blog/edit_comment.html', {'form': form, 'comment': comment})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        return context
 
 
-# --- DELETE A COMMENT ---
-@login_required
-def delete_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/edit_comment.html'
 
-    # Only the comment's author can delete it
-    if comment.author != request.user:
-        return HttpResponseForbidden("You can't delete someone else's comment.")
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
 
-    if request.method == 'POST':
-        post_id = comment.post.id
-        comment.delete()
-        return redirect('post-detail', pk=post_id)
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.get_object().post.id})
 
-    return render(request, 'blog/delete_comment.html', {'comment': comment})
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/delete_comment.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.get_object().post.id})
