@@ -122,9 +122,9 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse_lazy('post-detail', kwargs={'pk': self.get_object().post.id})
     
     class CommentCreateView(LoginRequiredMixin, CreateView):
-    model = Comment
-    form_class = CommentForm
-    template_name = 'blog/add_comment.html'
+        model = Comment
+        form_class = CommentForm
+        template_name = 'blog/add_comment.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
