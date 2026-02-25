@@ -6,3 +6,8 @@
     <a href="{% url 'post-update' object.pk %}">Edit</a>
     <a href="{% url 'post-delete' object.pk %}">Delete</a>
 {% endif %}
+
+{% for tag in post.tags.all %}
+    <a href="{% url 'posts_by_tag' tag.slug %}">{{ tag.name }}</a>
+{% endfor %}
+
