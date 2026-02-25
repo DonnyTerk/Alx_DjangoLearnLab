@@ -1,3 +1,5 @@
+from django.db.models import Q
+from .models import Post
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -36,9 +38,21 @@ def profile(request):
 
 class PostListView(ListView):
     model = Post
-    template_name = 'blog/post_list.html'
-    context_object_name = 'posts'
-    ordering = ['-published_date']
+    template_name = "blog/post_list.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        query = self.request.GET.get("q")
+
+        if query:
+            queryset = Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+
+        return queryset
 
 class PostDetailView(DetailView):
     model = Post
