@@ -1,4 +1,5 @@
 from django.db.models import Q
+from taggit.models import Tag
 from .models import Post
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -9,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Post, Comment
 from .forms import CommentForm, RegisterForm
 from django.views.generic import ListView
-from taggit.models import Tag
 from .models import Post
 
 
@@ -37,7 +37,6 @@ def profile(request):
     return render(request, 'blog/profile.html')
 
 
-# ──────────────── POST VIEWS ────────────────
 
 class PostListView(ListView):
     model = Post
@@ -93,7 +92,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == post.author
 
 
-# ──────────────── COMMENT VIEWS ────────────────
+
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
@@ -165,3 +164,29 @@ class PostByTagListView(ListView):
     def get_queryset(self):
         tag = Tag.objects.get(slug=self.kwargs.get("tag_slug"))
         return Post.objects.filter(tags__in=[tag])
+
+
+def search_posts(request):
+    query = request.GET.get('q', '')
+    results = []
+
+    if query:
+        results = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+    return render(request, 'blog/search_results.html', {
+        'results': results,
+        'query': query
+    })
+
+
+def posts_by_tag(request, tag_name):
+    posts = Post.objects.filter(tags__name=tag_name)
+
+    return render(request, 'blog/search_results.html', {
+        'results': posts,
+        'query': f'tag: {tag_name}'
+    })
