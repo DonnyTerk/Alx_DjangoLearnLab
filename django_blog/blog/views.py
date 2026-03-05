@@ -1,3 +1,4 @@
+from .forms import CommentForm, RegisterForm, PostForm
 from django.db.models import Q
 from taggit.models import Tag
 from .models import Post
@@ -62,7 +63,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm          # ← must be form_class, NOT fields
     template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
@@ -71,7 +72,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm          # ← must be form_class, NOT fields
     template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
@@ -81,7 +82,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
-
+    
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
