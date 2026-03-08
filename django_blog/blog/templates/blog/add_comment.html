@@ -1,11 +1,21 @@
 {% extends 'blog/base.html' %}
-
 {% block content %}
-  <h2>Add a Comment on "{{ post.title }}"</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Post Comment</button>
-  </form>
-  <a href="{% url 'post-detail' post.id %}">← Back to Post</a>
+<div style="max-width:600px; margin:0 auto;">
+    <a href="{% url 'post-detail' post.id %}" style="font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--muted); text-decoration:none; display:inline-block; margin-bottom:2rem;">← Back to Post</a>
+
+    <p style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:0.5rem;">Commenting on</p>
+    <h1 style="font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:900; margin-bottom:2rem;">{{ post.title }}</h1>
+
+    <form method="POST" style="display:flex; flex-direction:column; gap:1.25rem;">
+        {% csrf_token %}
+        <div>
+            <label>Your Comment</label>
+            <textarea name="content" rows="5" placeholder="Share your thoughts..."></textarea>
+        </div>
+        <div style="display:flex; gap:1rem;">
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+            <a href="{% url 'post-detail' post.id %}" class="btn btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

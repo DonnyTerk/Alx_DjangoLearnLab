@@ -1,3 +1,9 @@
-<h2>You have been logged out.</h2>
-
-<a href="{% url 'login' %}">Login again</a>
+{% extends 'blog/base.html' %}
+{% block content %}
+<div style="max-width:400px; margin:5rem auto; text-align:center;">
+    <p style="font-size:3rem; margin-bottom:1rem;">👋</p>
+    <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; margin-bottom:1rem;">See you soon!</h1>
+    <p style="color:var(--muted); margin-bottom:2rem;">You have been logged out successfully.</p>
+    <a href="{% url 'login' %}" class="btn btn-primary">Login Again</a>
+</div>
+{% endblock %}

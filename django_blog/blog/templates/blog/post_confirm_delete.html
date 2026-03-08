@@ -1,7 +1,15 @@
-<h2>Delete Post</h2>
+{% extends 'blog/base.html' %}
+{% block content %}
+<div style="max-width:500px; margin:3rem auto; text-align:center;">
+    <p style="font-size:3rem; margin-bottom:1rem;">⚠️</p>
+    <h1 style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; margin-bottom:1rem;">Delete Post?</h1>
+    <p style="color:var(--muted); margin-bottom:0.5rem;">You are about to permanently delete:</p>
+    <p style="font-weight:600; font-size:1.05rem; margin-bottom:2rem;">"{{ object.title }}"</p>
 
-<form method="POST">
-    {% csrf_token %}
-    <p>Are you sure you want to delete "{{ object.title }}"?</p>
-    <button type="submit">Yes, Delete</button>
-</form>
+    <form method="POST" style="display:flex; gap:1rem; justify-content:center;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete It</button>
+        <a href="{% url 'post-detail' object.pk %}" class="btn btn-ghost">Cancel</a>
+    </form>
+</div>
+{% endblock %}

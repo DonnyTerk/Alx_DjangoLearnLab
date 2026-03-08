@@ -1,9 +1,28 @@
-<h2>Register</h2>
+{% extends 'blog/base.html' %}
+{% block content %}
+<div style="max-width:480px; margin:3rem auto;">
+    <p style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:0.5rem;">Join Us</p>
+    <h1 style="font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:900; margin-bottom:2rem;">Create Account</h1>
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
+    <form method="POST" style="display:flex; flex-direction:column; gap:1.25rem;">
+        {% csrf_token %}
+        {% for field in form %}
+        <div>
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <small style="font-size:0.72rem; color:var(--muted); margin-top:0.3rem; display:block;">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <small style="color:var(--accent); font-size:0.78rem;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Create Account</button>
+    </form>
 
-<a href="{% url 'login' %}">Already have an account? Login</a>
+    <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--muted);">
+        Already have an account? <a href="{% url 'login' %}" style="color:var(--ink); font-weight:500;">Login here</a>
+    </p>
+</div>
+{% endblock %}

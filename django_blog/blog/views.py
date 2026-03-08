@@ -1,3 +1,4 @@
+from django.contrib import messages      
 from .forms import CommentForm, RegisterForm, PostForm
 from django.db.models import Q
 from taggit.models import Tag
@@ -34,9 +35,9 @@ def profile(request):
     if request.method == 'POST':
         request.user.email = request.POST.get('email')
         request.user.save()
+        messages.success(request, 'Profile updated successfully!')
         return redirect('profile')
     return render(request, 'blog/profile.html')
-
 
 
 class PostListView(ListView):
